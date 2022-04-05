@@ -133,3 +133,4 @@ dmypy.json
 media/
 static/
 .vscode/
+migrations/
