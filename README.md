@@ -1,4 +1,4 @@
-# api_yamdb
+# Продуктовый помошник Foodgram
 ![foodgram_workflow](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 # Проект доступен по адресу 
