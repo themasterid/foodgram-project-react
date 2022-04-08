@@ -6,37 +6,44 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Tag)
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
+from rest_framework.mixins import (CreateModelMixin, ListModelMixin,)
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAuthorOrAdminOrReadOnly
 
 from .serializers import (IngredientSerializer, RecipeSerializer,
                           SubscribeRecipeSerializer, SubscribeSerializer,
-                          TagsSerializer, TokenSerializer,
-                          UserPasswordSerializer, UsersCreateSerializer,
-                          UsersListSerializer)
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
+                          TagsSerializer, UserPasswordSerializer,
+                          UsersCreateSerializer, UsersListSerializer)
+
 User = get_user_model()
 
 
-class UserList(UserViewSet, CreateModelMixin, ListModelMixin):
+class UserList(
+                UserViewSet,
+                CreateModelMixin,
+                ListModelMixin):
+    """
+    Пользователи...
+    """
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return User.objects.annotate(is_subscribed=Value(False))
         return User.objects.annotate(
-            is_subscribed=Exists(self.request.user.follower.filter(
-                following=OuterRef('id')
-            ))
-        ).prefetch_related('follower', 'following')
+            is_subscribed=Exists(
+                self.request.user.follower.filter(
+                    following=OuterRef('id'))
+            )).prefetch_related(
+                'follower', 'following'
+        ) if self.request.user.is_authenticated else User.objects.annotate(
+            is_subscribed=Value(False))
 
     def perform_create(self, serializer):
         password = make_password(self.request.data['password'])
@@ -47,74 +54,54 @@ class UserList(UserViewSet, CreateModelMixin, ListModelMixin):
             return UsersCreateSerializer
         return UsersListSerializer
 
+    @action(
+        detail=True,
+        methods=['get'],
+        permission_classes=[IsAuthorOrAdminOrReadOnly])
+    def about_me(self):
+        """
+        Информация о текущем пользователе.
+        """
+        serializer = UsersListSerializer(self.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-class UserDetail(generics.RetrieveAPIView):
-    serializer_class = UsersListSerializer
-    permission_classes = (AllowAny,)
-
-    def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return User.objects.annotate(is_subscribed=Value(False))
-        return User.objects.annotate(
-            is_subscribed=Exists(self.request.user.follower.filter(
-                following=OuterRef('id')
-            ))
-        ).prefetch_related('follower', 'following')
-
-
-@api_view(['GET'])
-def about_me(request):
-    serializer = UsersListSerializer(request.user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['POST'])
-def set_password(request):
-    serializer = UserPasswordSerializer(
-        data=request.data, context={'request': request}
-    )
-    if serializer.is_valid():
-        serializer.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AuthToken(ObtainAuthToken):
-
-    serializer_class = TokenSerializer
-    permission_classes = (AllowAny,)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response(
-            {'auth_token': token.key}, status=status.HTTP_201_CREATED
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthorOrAdminOrReadOnly])
+    def set_password(self):
+        serializer = UserPasswordSerializer(
+            data=self.request.data, context={'request': self.request}
         )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthorOrAdminOrReadOnly])
+    def logout(self):
+        token = get_object_or_404(Token, user=self.request.user)
+        token.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['POST'])
-def logout(request):
-    token = get_object_or_404(Token, user=request.user)
-    token.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class TagDetail(generics.RetrieveAPIView):
-    queryset = Tag.objects.all()
-    serializer_class = TagsSerializer
-    permission_classes = (AllowAny,)
-
-
-class TagList(generics.ListAPIView):
+class TagsViewSet(ReadOnlyModelViewSet, ListModelMixin):
+    """
+    Список тэгов.
+    """
     queryset = Tag.objects.all()
     serializer_class = TagsSerializer
     permission_classes = (AllowAny,)
     pagination_class = None
 
 
-class IngredientList(generics.ListAPIView):
+class IngredientsViewSet(ReadOnlyModelViewSet, ListModelMixin):
+    """
+    Список ингредиентов.
+    """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filterset_class = IngredientFilter
@@ -122,13 +109,13 @@ class IngredientList(generics.ListAPIView):
     pagination_class = None
 
 
-class IngredientDetail(generics.RetrieveAPIView):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    permission_classes = (AllowAny,)
-
-
-class RecipeList(generics.ListCreateAPIView):
+class RecipesViewSet(
+                UserViewSet,
+                CreateModelMixin,
+                ListModelMixin):
+    """
+    Список рецептов.
+    """
     serializer_class = RecipeSerializer
     filterset_class = RecipeFilter
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -161,34 +148,34 @@ class RecipeList(generics.ListCreateAPIView):
         serializer.save(author=self.request.user)
 
 
-class RecipeDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = RecipeSerializer
-    permission_classes = (IsAuthorOrAdminOrReadOnly,)
+# class RecipeDetail(generics.RetrieveUpdateDestroyAPIView):
+#     serializer_class = RecipeSerializer
+#     permission_classes = (IsAuthorOrAdminOrReadOnly,)
 
-    def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return Recipe.objects.annotate(
-                is_in_shopping_cart=Value(False),
-                is_favorited=Value(False),
-            ).select_related(
-                'author'
-            ).prefetch_related(
-                'tags', 'ingredients', 'recipe',
-                'shopping_cart', 'favorite_recipe'
-            )
-        return Recipe.objects.annotate(
-            is_favorited=Exists(FavoriteRecipe.objects.filter(
-                user=self.request.user, recipe=OuterRef('id'))
-            ),
-            is_in_shopping_cart=Exists(ShoppingCart.objects.filter(
-                user=self.request.user, recipe=OuterRef('id'))
-            )
-        ).select_related(
-            'author'
-        ).prefetch_related(
-            'tags', 'ingredients', 'recipe',
-            'shopping_cart', 'favorite_recipe'
-        )
+#     def get_queryset(self):
+#         if not self.request.user.is_authenticated:
+#             return Recipe.objects.annotate(
+#                 is_in_shopping_cart=Value(False),
+#                 is_favorited=Value(False),
+#             ).select_related(
+#                 'author'
+#             ).prefetch_related(
+#                 'tags', 'ingredients', 'recipe',
+#                 'shopping_cart', 'favorite_recipe'
+#             )
+#         return Recipe.objects.annotate(
+#             is_favorited=Exists(FavoriteRecipe.objects.filter(
+#                 user=self.request.user, recipe=OuterRef('id'))
+#             ),
+#             is_in_shopping_cart=Exists(ShoppingCart.objects.filter(
+#                 user=self.request.user, recipe=OuterRef('id'))
+#             )
+#         ).select_related(
+#             'author'
+#         ).prefetch_related(
+#             'tags', 'ingredients', 'recipe',
+#             'shopping_cart', 'favorite_recipe'
+#         )
 
 
 class SubscribeList(generics.ListAPIView):
