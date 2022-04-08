@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
@@ -14,13 +13,15 @@ class Recipe(models.Model):
         related_name='recipe',
         verbose_name='Автор рецепта')
     name = models.CharField(
-        'Рецепт',
+        'Название рецепта',
         max_length=255)
     image = models.ImageField(
         'Изображение рецепта',
-        upload_to='recipes/')
-    text = models.TextField('Описание рецепта')
-    cooking_time = models.BigIntegerField('Время приготовления')
+        upload_to='images_recipe/')
+    text = models.TextField(
+        'Текст рецепта')
+    cooking_time = models.BigIntegerField(
+        'Время приготовления рецепта')
     ingredients = models.ManyToManyField(
         'Ingredient',
         through='RecipeIngredient')
@@ -29,20 +30,20 @@ class Recipe(models.Model):
         through='RecipeTag')
     pub_date = models.DateTimeField(
         'Дата публикации',
-        auto_now_add=True,)
+        auto_now_add=True)
 
     class Meta:
         ordering = ['-pub_date']
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
-    def __str__(self) -> str:
-        return f'{self.author.email}, {self.name}'
+    def __str__(self):
+        return f'Пользователь {self.author.email} добавил рецепт {self.name}'
 
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
-        'Recipe',
+        Recipe,
         on_delete=models.CASCADE,
         related_name='recipe')
     ingredient = models.ForeignKey(
@@ -50,7 +51,7 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name='ingredient')
     amount = models.BigIntegerField(
-        _('Amount of ingredient'),)
+        'Количество ингредиента')
 
     class Meta:
         verbose_name = 'Количество ингредиента'
@@ -58,13 +59,12 @@ class RecipeIngredient(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
-                name='unique ingredient')
-        ]
+                name='unique ingredient')]
 
 
 class RecipeTag(models.Model):
     recipe = models.ForeignKey(
-        'Recipe',
+        Recipe,
         on_delete=models.CASCADE)
     tag = models.ForeignKey(
         'Tag',
@@ -73,24 +73,25 @@ class RecipeTag(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
-        'Имя тега',
+        'Имя тэга',
         max_length=200,
         unique=True)
     color = models.CharField(
-        'Hexcolor тега',
+        'Цвет тэга (#EA692F)',
         max_length=7,
         unique=True)
     slug = models.SlugField(
-        'Слаг тега',
+        'Слаг тэга',
         max_length=200,
         unique=True)
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
 
     def __str__(self):
-        return f'{self.name}, {self.slug}'
+        return f'Тэг {self.name} добавлен'
 
 
 class Ingredient(models.Model):
@@ -102,11 +103,12 @@ class Ingredient(models.Model):
         max_length=200)
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
-        return f'{self.name}, {self.measurement_unit}'
+        return f'Ингридиент {self.name} ({self.measurement_unit}) создан.'
 
 
 class Subscribe(models.Model):
@@ -119,7 +121,7 @@ class Subscribe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Подписка')
+        verbose_name='Пользователь')
     created = models.DateTimeField(
         'Дата подписки',
         auto_now_add=True)
@@ -130,11 +132,12 @@ class Subscribe(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['follower', 'following'],
-                name='unique subs')
-        ]
+                name='unique subs')]
 
     def __str__(self):
-        return f'follower: {self.follower} - following: {self.following}'
+        return (
+            f'Пользователь {self.follower} '
+            f'подписался на {self.following}')
 
 
 class FavoriteRecipe(models.Model):
@@ -146,22 +149,21 @@ class FavoriteRecipe(models.Model):
     recipe = models.ManyToManyField(
         Recipe,
         related_name='favorite_recipe',
-        verbose_name='Избранный рецепт'
-    )
+        verbose_name='Избранный рецепт')
 
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
 
     def __str__(self):
-        return (
-            f'{self.user}, '
-            f'{[i.name for i in self.recipe.all()]}')
+        list_ = [_.name for _ in self.recipe.all()]
+        return f'Пользователь {self.user} добавил {list_} в избранные.'
 
     @receiver(post_save, sender=User)
-    def create_empty_favorite_recipe(sender, instance, created, **kwargs):
+    def create_favorite_recipe(
+            sender, instance, created, **kwargs):
         if created:
-            FavoriteRecipe.objects.create(user=instance)
+            return FavoriteRecipe.objects.create(user=instance)
 
 
 class ShoppingCart(models.Model):
@@ -179,12 +181,12 @@ class ShoppingCart(models.Model):
         verbose_name = 'Корзина с рецептом'
         verbose_name_plural = 'Корзина с рецептами'
 
-    def __str__(self) -> str:
-        return (
-            f'{self.user}, '
-            f'{[i.name for i in self.recipe.all()]}')
+    def __str__(self):
+        list_ = [_.name for _ in self.recipe.all()]
+        return f'Пользователь {self.user} добавил {list_} в корзину.'
 
     @receiver(post_save, sender=User)
-    def create_empty_shopping_cart(sender, instance, created, **kwargs):
+    def create_shopping_cart(
+            sender, instance, created, **kwargs):
         if created:
-            ShoppingCart.objects.create(user=instance)
+            return ShoppingCart.objects.create(user=instance)

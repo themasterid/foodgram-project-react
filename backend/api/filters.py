@@ -6,8 +6,7 @@ from recipes.models import Ingredient, Recipe
 
 
 class IngredientFilter(filters.FilterSet):
-    name = filters.CharFilter(
-        lookup_expr='istartswith')
+    name = filters.CharFilter(lookup_expr='istartswith')
 
     class Meta:
         model = Ingredient
@@ -17,33 +16,28 @@ class IngredientFilter(filters.FilterSet):
 class TagsMultipleChoiceField(MultipleChoiceField):
     def validate(self, value):
         if self.required and not value:
-            raise ValidationError(
-                self.error_messages['required'],
-                code='required')
+            raise ValidationError(self.error_messages['required'],
+                                  code='required')
         for val in value:
             if val in self.choices and not self.valid_value(val):
                 raise ValidationError(
                     self.error_messages['invalid_choice'],
                     code='invalid_choice',
-                    params={'value': val},)
+                    params={'value': val},
+                )
 
 
 class TagsFilter(filters.AllValuesMultipleFilter):
     field_class = TagsMultipleChoiceField
 
 
-# ! READY
 class RecipeFilter(filters.FilterSet):
-    is_favorited = filters.BooleanFilter(
-        field_name='is_favorited',
-        label='В избранном',)
+    is_favorited = filters.BooleanFilter(field_name='is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
-        field_name='is_in_shopping_cart',
-        label='В корзине',)
-    tags = TagsFilter(
-        field_name='tags__slug',
-        label='Слаг тэга',)
+        field_name='is_in_shopping_cart'
+    )
+    tags = TagsFilter(field_name='tags__slug')
 
     class Meta:
         model = Recipe
-        fields = ('is_favorited', 'author', 'is_in_shopping_cart', 'tags',)
+        fields = ('is_favorited', 'is_in_shopping_cart', 'author', 'tags',)
