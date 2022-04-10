@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, Recipe, IngredientRecipe,
+from .models import (FavoriteRecipe, Ingredient, Recipe, RecipeIngredient,
                      RecipeTag, ShoppingCart, Subscribe, Tag)
 
 EMPTY_MSG = '-пусто-'
@@ -12,7 +12,7 @@ class RecipeTagAdmin(admin.StackedInline):
 
 
 class RecipeIngredientAdmin(admin.StackedInline):
-    model = IngredientRecipe
+    model = RecipeIngredient
     autocomplete_fields = ('ingredient',)
 
 
@@ -77,8 +77,8 @@ class SubscribeAdmin(admin.ModelAdmin):
     empty_value_display = EMPTY_MSG
 
 
-@admin.register(Favorite)
-class FavoriteAdmin(admin.ModelAdmin):
+@admin.register(FavoriteRecipe)
+class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'user', 'get_recipe', 'get_count')
     empty_value_display = EMPTY_MSG
