@@ -21,7 +21,7 @@ ssh <username>@<server_ip>
 sudo apt install docker.io
 https://docs.docker.com/compose/install/ # docker-compose
 ```
-- Заполнить в настройках репозитория секреты согласно env_example.txt
+- Заполнить в настройках репозитория секреты .env
 
 ```env
 DB_ENGINE='django.db.backends.postgresql'
