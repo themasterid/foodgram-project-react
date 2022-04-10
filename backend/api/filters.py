@@ -1,7 +1,9 @@
 import django_filters as filters
 from django.core.exceptions import ValidationError
+from django_filters import AllValuesMultipleFilter
+from django_filters import rest_framework as filters
 from django_filters.fields import MultipleChoiceField
-
+from django_filters.widgets import BooleanWidget
 from recipes.models import Ingredient, Recipe
 
 
@@ -13,31 +15,17 @@ class IngredientFilter(filters.FilterSet):
         fields = ('name',)
 
 
-class TagsMultipleChoiceField(MultipleChoiceField):
-    def validate(self, value):
-        if self.required and not value:
-            raise ValidationError(self.error_messages['required'],
-                                  code='required')
-        for val in value:
-            if val in self.choices and not self.valid_value(val):
-                raise ValidationError(
-                    self.error_messages['invalid_choice'],
-                    code='invalid_choice',
-                    params={'value': val},
-                )
-
-
-class TagsFilter(filters.AllValuesMultipleFilter):
-    field_class = TagsMultipleChoiceField
-
-
 class RecipeFilter(filters.FilterSet):
-    is_favorited = filters.BooleanFilter(field_name='is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
-        field_name='is_in_shopping_cart'
-    )
-    tags = TagsFilter(field_name='tags__slug')
+        widget=BooleanWidget(),
+        label='В корзине.')
+    is_favorited = filters.BooleanFilter(
+        widget=BooleanWidget(),
+        label='В избранных.')
+    tags = AllValuesMultipleFilter(
+        field_name='tags__slug',
+        label='Ссылка')
 
     class Meta:
         model = Recipe
-        fields = ('is_favorited', 'is_in_shopping_cart', 'author', 'tags',)
+        fields = ['is_favorited', 'is_in_shopping_cart']

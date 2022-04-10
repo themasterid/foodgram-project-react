@@ -135,4 +135,3 @@ static/
 .vscode/
 backend/data/
 migrations/
-django_static/

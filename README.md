@@ -15,13 +15,24 @@ password: fakegrampassword
 
 ## Запуск с использованием CI/CD
 
-Установить docker, docker-compose на боевом сервере
+Установить docker, docker-compose на сервере Yandex.Cloud
 ```bash
 ssh <username>@<server_ip>
 sudo apt install docker.io
 https://docs.docker.com/compose/install/ # docker-compose
 ```
-- Заполнить в настройках репозитория секреты согласно env_template.txt
+- Заполнить в настройках репозитория секреты согласно env_example.txt
+
+```env
+DB_ENGINE='django.db.backends.postgresql'
+DB_NAME='foodgram'
+POSTGRES_USER='foodgram'
+POSTGRES_PASSWORD='xxx'
+DB_HOST='127.0.0.1'
+DB_PORT='5432'
+SECRET_KEY='my_mega_secret_code_xxxxxxxxxxxxxxxxxxxxx'
+ALLOWED_HOSTS='127.0.0.1, localhost'
+```
 - В docker-compose web:image установить свой контейнер
 
 Скопировать на сервер настройки infra, fronted, docs.
@@ -44,10 +55,10 @@ docker-compose exec web python manage.py migrate --noinput
 docker-compose exec web python manage.py createsuperuser
 docker-compose exec web python manage.py collectstatic --no-input
 ```
-По желанию наполнить бд ингредиентами и тэгами:
+Дополнительно можно наполнить DB ингредиентами и тэгами:
 ```bash
 docker-compose exec web python manage.py load_tags
-docker-compose exec web python manage.py load_ingredients
+docker-compose exec web python manage.py load_ingrs
 ```
 
 
