@@ -199,8 +199,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         if ingredients:
             instance.ingredients.clear()
             self.create_ingredients(ingredients, instance)
-        return super(
-            RecipeWriteSerializer, self).update(
+        return super().update(
                 instance, validated_data)
 
 
