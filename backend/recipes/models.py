@@ -21,7 +21,7 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
-        return f'Ингридиент {self.name} ({self.measurement_unit}) создан.'
+        return f'{self.name}, {self.measurement_unit}.'
 
 
 class Tag(models.Model):
@@ -44,7 +44,7 @@ class Tag(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f'Тэг {self.name} добавлен'
+        return self.name
 
 
 class Recipe(models.Model):
@@ -85,7 +85,7 @@ class Recipe(models.Model):
         ordering = ('-pub_date', )
 
     def __str__(self):
-        return f'Пользователь {self.author.email} добавил рецепт {self.name}'
+        return f'{self.author.email}, {self.name}'
 
 
 class RecipeIngredient(models.Model):
@@ -148,9 +148,7 @@ class Subscribe(models.Model):
                 name='unique_subscription')]
 
     def __str__(self):
-        return (
-            f'Пользователь {self.user} '
-            f'подписался на {self.author}')
+        return f'Пользователь {self.user} -> автор {self.author}'
 
 
 class FavoriteRecipe(models.Model):
