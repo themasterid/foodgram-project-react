@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.core import validators
 from django.db import models
 from django.db.models.signals import post_save
+from django.core import validators
 from django.dispatch import receiver
 
 User = get_user_model()
@@ -168,7 +168,7 @@ class FavoriteRecipe(models.Model):
         verbose_name_plural = 'Избранные рецепты'
 
     def __str__(self):
-        list_ = [_.name for _ in self.recipe.all()]
+        list_ = [item['name'] for item in self.recipe.values('name')]
         return f'Пользователь {self.user} добавил {list_} в избранные.'
 
     @receiver(post_save, sender=User)
@@ -196,7 +196,7 @@ class ShoppingCart(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        list_ = [_.name for _ in self.recipe.all()]
+        list_ = [item['name'] for item in self.recipe.values('name')]
         return f'Пользователь {self.user} добавил {list_} в покупки.'
 
     @receiver(post_save, sender=User)
