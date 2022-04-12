@@ -1,14 +1,9 @@
 from django.contrib import admin
 
 from .models import (FavoriteRecipe, Ingredient, Recipe, RecipeIngredient,
-                     RecipeTag, ShoppingCart, Subscribe, Tag)
+                     ShoppingCart, Subscribe, Tag)
 
 EMPTY_MSG = '-пусто-'
-
-
-class RecipeTagAdmin(admin.StackedInline):
-    model = RecipeTag
-    autocomplete_fields = ('tag',)
 
 
 class RecipeIngredientAdmin(admin.StackedInline):
@@ -26,7 +21,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'name', 'cooking_time',
         'author__email', 'ingredients__name')
     list_filter = ('pub_date', 'tags',)
-    inlines = (RecipeTagAdmin, RecipeIngredientAdmin,)
+    inlines = (RecipeIngredientAdmin,)
     empty_value_display = EMPTY_MSG
 
     @admin.display(
