@@ -10,7 +10,7 @@ SECRET_KEY = (
     os.getenv('SECRET_KEY'),
     'my_mega_secret_code_ilz@4zqj=rq&agdol^##zgl9(vs')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS', default='localhost').split(', ')
