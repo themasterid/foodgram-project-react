@@ -115,15 +115,6 @@ class RecipeIngredient(models.Model):
                 name='unique ingredient')]
 
 
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE)
-    tag = models.ForeignKey(
-        'Tag',
-        on_delete=models.CASCADE)
-
-
 class Subscribe(models.Model):
     user = models.ForeignKey(
         User,
