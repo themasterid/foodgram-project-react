@@ -2,7 +2,9 @@ name: foodgram-project-react workflow
 
 on:
   push:
-    branches: [ master ]
+    branches: 
+      - master
+  pull_request: {}
 
 jobs:
   tests:
@@ -13,7 +15,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.8
 
     - name: Install dependencies
       run: | 
@@ -23,17 +25,12 @@ jobs:
     - name: Test with flake8 and django tests
       run: |
         python -m flake8
-        cd backend/
-        python manage.py test
+
   build_and_push_to_docker_hub:
         name: Push Docker image to Docker Hub
         runs-on: ubuntu-latest
         needs: tests
-        if:
-          contains('
-            refs/heads/master
-            refs/heads/main
-          ', github.ref)
+        if: github.ref == 'refs/heads/master'
         steps:
           - name: Check out the repo
             uses: actions/checkout@v2 
@@ -47,15 +44,15 @@ jobs:
           - name: Push to Docker Hub
             uses: docker/build-push-action@v2 
             with:
+              context: backend/
               push: true
               tags: themasterid/foodgram_backend:latest
-              file: backend/Dockerfile
+
   deploy:
       runs-on: ubuntu-latest
       needs: build_and_push_to_docker_hub
-      if: github.ref == 'refs/heads/master'
       steps:
-      - name: executing remote ssh commands to deploy
+      - name: pull docker image
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -63,12 +60,32 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            # Выполняет pull образа с DockerHub
-            sudo docker pull themasterid/foodgram_backend
-            #остановка всех контейнеров
-            sudo docker stop $(sudo docker ps -a -q)
-            sudo docker run --rm -d -p 5000:5000 themasterid/foodgram_backend
-  
+            sudo docker pull themasterid/foodgram_backend:latest
+            cd infra/
+            sudo docker-compose stop
+            sudo docker-compose rm backend
+
+    - name: docker-compose up
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        script: |
+          cd infra/
+          touch .env
+          echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+          sudo docker-compose up -d --build
+
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
@@ -78,4 +95,4 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: ${{ github.workflow }} успешно выполнен!
+        message: ${{ github.workflow }} для репозитория ${{ github.repository }} успешно выполнен!
