@@ -4,7 +4,7 @@
 
 # Проект доступен по адресу 
 
-https://themasterid.sytes.net/
+http://themasterid.sytes.net/
 
 Супер пользователь:
 ```
