@@ -134,4 +134,3 @@ media/
 static/
 .vscode/
 backend/data/
-migrations/
