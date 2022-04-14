@@ -47,19 +47,19 @@ scp -r frontend/ <username>@<server_ip>:/home/<username>/frontend/
 
 Собрать контейнер:
 ```bash
-- docker-compose up -d
+- sudo docker-compose up -d
 ```
 Выполнить следующие команды:
 ```bash
-docker-compose exec web python manage.py makemigrations
-docker-compose exec web python manage.py migrate --noinput 
-docker-compose exec web python manage.py createsuperuser
-docker-compose exec web python manage.py collectstatic --no-input
+sudo docker-compose exec web python manage.py makemigrations
+sudo docker-compose exec web python manage.py migrate --noinput 
+sudo docker-compose exec web python manage.py createsuperuser
+sudo docker-compose exec web python manage.py collectstatic --no-input
 ```
 Дополнительно можно наполнить DB ингредиентами и тэгами:
 ```bash
-docker-compose exec web python manage.py load_tags
-docker-compose exec web python manage.py load_ingrs
+sudo docker-compose exec web python manage.py load_tags
+sudo docker-compose exec web python manage.py load_ingrs
 ```
 
 
@@ -84,8 +84,8 @@ python manage.py runserver
 
 - Для загрузки ингредиентов и тэгов:
 ```bash
-docker-compose exec web python manage.py load_tags
-docker-compose exec web python manage.py load_ingredients
+sudo docker-compose exec web python manage.py load_tags
+sudo docker-compose exec web python manage.py load_ingredients
 ```
 
 ### Документация к API доступна после запуска
