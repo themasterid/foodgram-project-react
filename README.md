@@ -37,13 +37,12 @@ DB_PORT='5432'
 SECRET_KEY='my_mega_secret_code_xxxxxxxxxxxxxxxxxxxxx'
 ALLOWED_HOSTS='127.0.0.1, localhost'
 ```
-- В docker-compose web:image установить свой контейнер
 
-Скопировать на сервер настройки infra, fronted, docs.
+Скопировать на сервер настройки docker-compose.yml, default.conf из папки infra.
+
 ```bash
-scp -r docs/ <username>@<server_ip>:/home/<username>/docs/
-scp -r infra/ <username>@<server_ip>:/home/<username>/infra/
-scp -r frontend/ <username>@<server_ip>:/home/<username>/frontend/
+scp docker-compose.yml username@server_ip:/home/<username>/
+scp default.conf <username>@<server_ip>:/home/<username>/
 ```
 
 ## Запуск проекта через Docker
@@ -54,15 +53,15 @@ sudo docker-compose up -d
 ```
 Выполнить следующие команды:
 ```bash
-sudo docker-compose exec web python manage.py makemigrations
-sudo docker-compose exec web python manage.py migrate --noinput 
-sudo docker-compose exec web python manage.py createsuperuser
-sudo docker-compose exec web python manage.py collectstatic --no-input
+sudo docker-compose exec backend python manage.py makemigrations
+sudo docker-compose exec backend python manage.py migrate --noinput 
+sudo docker-compose exec backend python manage.py createsuperuser
+sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
 Дополнительно можно наполнить DB ингредиентами и тэгами:
 ```bash
-sudo docker-compose exec web python manage.py load_tags
-sudo docker-compose exec web python manage.py load_ingrs
+sudo docker-compose exec backend python manage.py load_tags
+sudo docker-compose exec backend python manage.py load_ingrs
 ```
 
 
@@ -87,8 +86,8 @@ python manage.py runserver
 
 - Для загрузки ингредиентов и тэгов:
 ```bash
-sudo docker-compose exec web python manage.py load_tags
-sudo docker-compose exec web python manage.py load_ingredients
+sudo docker-compose exec backend python manage.py load_tags
+sudo docker-compose exec backend python manage.py load_ingredients
 ```
 
 ### Документация к API доступна после запуска
