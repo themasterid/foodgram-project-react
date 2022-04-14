@@ -1,6 +1,7 @@
 import io
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.db.models.aggregates import Count, Sum
 from django.db.models.expressions import Exists, OuterRef, Value
 from django.http import FileResponse
@@ -124,6 +125,22 @@ class AddDeleteShoppingCart(
         self.request.user.shopping_cart.recipe.remove(instance)
 
 
+class AuthToken(ObtainAuthToken):
+    """Авторизация пользователя."""
+
+    serializer_class = TokenSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response(
+            {'auth_token': token.key},
+            status=status.HTTP_201_CREATED)
+
+
 class UsersViewSet(UserViewSet):
     """Пользователи."""
 
@@ -141,9 +158,13 @@ class UsersViewSet(UserViewSet):
             is_subscribed=Value(False))
 
     def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
+        if self.request.method.lower() == 'post':
             return UserCreateSerializer
         return UserListSerializer
+
+    def perform_create(self, serializer):
+        password = make_password(self.request.data['password'])
+        serializer.save(password=password)
 
     @action(
         detail=False,
@@ -273,19 +294,3 @@ def set_password(request):
     return Response(
         {'error': 'Введите верные данные!'},
         status=status.HTTP_400_BAD_REQUEST)
-
-
-class Tokens(ObtainAuthToken):
-    """Авторизация пользователя."""
-
-    serializer_class = TokenSerializer
-    permission_classes = (AllowAny,)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response(
-            {'auth_token': token.key},
-            status=status.HTTP_201_CREATED)

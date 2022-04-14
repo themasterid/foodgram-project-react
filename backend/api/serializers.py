@@ -27,6 +27,7 @@ class TokenSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
+        print(email, password)
         if email and password:
             user = authenticate(
                 request=self.context.get('request'),
@@ -34,7 +35,7 @@ class TokenSerializer(serializers.Serializer):
                 password=password)
             if not user:
                 raise serializers.ValidationError(
-                    ERR_MSG + '(Tokens)',
+                    ERR_MSG,
                     code='authorization')
         else:
             msg = 'Необходимо указать "адрес электронной почты" и "пароль".'
