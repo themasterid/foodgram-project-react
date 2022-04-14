@@ -12,6 +12,7 @@ services:
     image: themasterid/foodgram_backend:latest
     restart: always
     volumes:
+      - data_value:/code/data/
       - static_value:/code/static/
       - media_value:/code/media/
     depends_on:
@@ -46,3 +47,4 @@ volumes:
   postgres_data:
   static_value:
   media_value:
+  data_value:

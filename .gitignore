@@ -133,4 +133,3 @@ dmypy.json
 media/
 static/
 .vscode/
-backend/data/

@@ -16,7 +16,7 @@ password: fakegrampassword
 
 ## Запуск с использованием CI/CD
 
-Установить docker, docker-compose на сервере Yandex.Cloud
+Установить docker, docker-compose на сервере Yandex.Cloud в папку infra
 ```bash
 ssh username@ip
 sudo apt update && sudo apt upgrade -y && sudo apt install curl -y
