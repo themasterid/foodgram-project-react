@@ -69,7 +69,7 @@ DATABASES = {
             'DB_ENGINE',
             default='django.db.backends.postgresql'),
         'NAME': os.getenv(
-            'DB_NAME',
+            'POSTGRES_DB',
             default='postgres'),
         'USER': os.getenv(
             'POSTGRES_USER',
