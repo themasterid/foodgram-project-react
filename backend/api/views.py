@@ -10,6 +10,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import generics, status, viewsets
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action, api_view
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticated,
@@ -22,9 +24,9 @@ from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Subscribe, Tag)
 from .serializers import (IngredientSerializer, RecipeReadSerializer,
                           RecipeWriteSerializer, SubscribeRecipeSerializer,
-                          SubscribeSerializer, TagSerializer,
-                          UserCreateSerializer, UserListSerializer,
-                          UserPasswordSerializer)
+                          SubscribeSerializer, TokenSerializer,
+                          TagSerializer, UserCreateSerializer,
+                          UserListSerializer, UserPasswordSerializer)
 
 
 User = get_user_model()
@@ -272,3 +274,19 @@ def set_password(request):
     return Response(
         {'error': 'Введите верные данные!'},
         status=status.HTTP_400_BAD_REQUEST)
+
+
+class Tokens(ObtainAuthToken):
+    """Авторизация пользователя."""
+
+    serializer_class = TokenSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response(
+            {'auth_token': token.key},
+            status=status.HTTP_201_CREATED)

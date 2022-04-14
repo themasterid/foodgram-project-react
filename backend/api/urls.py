@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 
 from api.views import (AddAndDeleteSubscribe, AddDeleteFavoriteRecipe,
                        AddDeleteShoppingCart, IngredientsViewSet,
-                       RecipesViewSet, TagsViewSet, UsersViewSet, set_password)
+                       RecipesViewSet, TagsViewSet, Tokens, UsersViewSet,
+                       set_password)
 
 app_name = 'api'
 
@@ -15,6 +16,10 @@ router.register('recipes', RecipesViewSet)
 
 
 urlpatterns = [
+     path(
+          'auth/token/login/',
+          Tokens.as_view(),
+          name='login'),
      path(
           'users/set_password/',
           set_password,
