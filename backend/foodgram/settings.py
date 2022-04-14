@@ -10,7 +10,7 @@ SECRET_KEY = (
     os.getenv('SECRET_KEY'),
     'my_mega_secret_code_ilz@4zqj=rq&agdol^##zgl9(vs')
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS', default='localhost').split(', ')
@@ -74,7 +74,7 @@ DATABASES = {
         'PASSWORD': os.getenv(
             'POSTGRES_PASSWORD'),
         'HOST': os.getenv(
-            'DB_HOST', default='db_1'),
+            'DB_HOST'),
         'PORT': os.getenv(
             'DB_PORT')
     }
