@@ -87,7 +87,7 @@ python manage.py runserver
 - Для загрузки ингредиентов и тэгов:
 ```bash
 sudo docker-compose exec backend python manage.py load_tags
-sudo docker-compose exec backend python manage.py load_ingredients
+sudo docker-compose exec backend python manage.py load_ingrs
 ```
 
 ### Документация к API доступна после запуска
