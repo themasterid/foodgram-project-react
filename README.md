@@ -18,16 +18,19 @@ password: fakegrampassword
 
 Установить docker, docker-compose на сервере Yandex.Cloud
 ```bash
-ssh <username>@<server_ip>
-sudo apt install docker.io
-https://docs.docker.com/compose/install/ # docker-compose
+ssh username@ip
+sudo apt update && sudo apt upgrade -y && sudo apt install curl -y
+sudo curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo rm get-docker.sh
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 ```
+- Перенести файлы docker-compose.yml и default.conf на сервер.
 - Заполнить в настройках репозитория секреты .env
 
 ```env
 DB_ENGINE='django.db.backends.postgresql'
 DB_NAME='foodgram'
-POSTGRES_USER='foodgram'
+POSTGRES_USER='foodgram_u'
 POSTGRES_PASSWORD='xxx'
 DB_HOST='127.0.0.1'
 DB_PORT='5432'
