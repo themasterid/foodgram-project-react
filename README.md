@@ -47,7 +47,7 @@ scp -r frontend/ <username>@<server_ip>:/home/<username>/frontend/
 
 Собрать контейнер:
 ```bash
-- sudo docker-compose up -d
+sudo docker-compose up -d
 ```
 Выполнить следующие команды:
 ```bash
