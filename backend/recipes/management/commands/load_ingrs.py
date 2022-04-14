@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         data_path = settings.BASE_DIR
         with open(
-            f'{data_path}\\data\\ingredients.csv',
+            f'{data_path}/data/ingredients.csv',
             'r',
             encoding='utf-8'
         ) as file:
