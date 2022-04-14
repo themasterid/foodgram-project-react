@@ -1,15 +1,10 @@
 name: foodgram-project-react workflow
 
-on:
-  push:
-    branches:
-      - master
-  pull_request: {}
+on: [push]
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -47,8 +42,15 @@ jobs:
               context: backend/
               push: true
               tags: themasterid/foodgram_backend:latest
+          - name: Push frontend
+            uses: docker/build-push-action@v2 
+            with:
+              context: frontend/
+              push: true
+              tags: themasterid/foodgram_frontend:latest
 
   deploy:
+      if: ${{ github.ref }} == 'master'
       runs-on: ubuntu-latest
       needs: build_and_push_to_docker_hub
       steps:
@@ -61,10 +63,10 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker pull themasterid/foodgram_backend:latest
+            sudo docker pull themasterid/foodgram_frontend:latest
             cd infra/
             sudo docker-compose stop
             sudo docker-compose rm backend
-
       - name: docker-compose up
         uses: appleboy/ssh-action@master
         with:
