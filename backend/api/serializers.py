@@ -55,8 +55,8 @@ class GetIsSubscribedMixin:
 
 
 class UserListSerializer(
-        serializers.ModelSerializer,
-        GetIsSubscribedMixin):
+        GetIsSubscribedMixin,
+        serializers.ModelSerializer):
     is_subscribed = serializers.BooleanField(read_only=True)
 
     class Meta:
@@ -137,8 +137,8 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeUserSerializer(
-        serializers.ModelSerializer,
-        GetIsSubscribedMixin):
+        GetIsSubscribedMixin,
+        serializers.ModelSerializer):
 
     is_subscribed = serializers.SerializerMethodField(
         read_only=True)
