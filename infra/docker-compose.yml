@@ -31,7 +31,6 @@ services:
     image: nginx:1.19.3
     ports:
       - 80:80
-      # - 443:443
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
@@ -39,7 +38,6 @@ services:
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
       - static_value:/var/html/static/
       - media_value:/var/html/media/
-      # - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
       - frontend
 
