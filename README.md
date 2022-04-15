@@ -1,7 +1,5 @@
+[![foodgram-project-react workflow](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
 # Продуктовый помошник Foodgram
-
-![foodgram-project-react workflow](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master)
-
 # Проект доступен по адресу 
 
 http://themasterid.sytes.net/
