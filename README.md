@@ -1,14 +1,8 @@
 ![foodgram-project-react Workflow Status](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master&event=push)
 # Продуктовый помощник Foodgram
-# Проект доступен по адресу (временно)
 
-http://themasterid.sytes.net/
+Проект доступен по адресу http://62.84.115.143/recipes
 
-Супер пользователь (временно):
-```
-email: fake@fake.fake
-password: fakegrampassword
-```
 ## Описание проекта Foodgram
 «Продуктовый помощник»: приложение, на котором пользователи публикуют рецепты, подписываться на публикации других авторов и добавлять рецепты в избранное. Сервис «Список покупок» позволит пользователю создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
 
