@@ -1,6 +1,6 @@
 # Продуктовый помощник Foodgram
 
-![foodgram-project-react workflow](https://github.com/github/docs/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master)
+![foodgram-project-react workflow](https://github.com/github/docs/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 # Проект доступен по адресу (временно)
 
