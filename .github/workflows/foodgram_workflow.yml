@@ -85,6 +85,7 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
             echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+            echo DEBUG=False >> .env
             sudo docker-compose up -d --build
 
 
