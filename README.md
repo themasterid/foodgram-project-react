@@ -1,10 +1,10 @@
 [![foodgram-project-react workflow](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
 # Продуктовый помощник Foodgram
-# Проект доступен по адресу 
+# Проект доступен по адресу (временно)
 
 http://themasterid.sytes.net/
 
-Супер пользователь:
+Супер пользователь (временно):
 ```
 email: fake@fake.fake
 password: fakegrampassword
@@ -82,12 +82,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-- Для загрузки ингредиентов и тэгов:
-```bash
-sudo docker-compose exec backend python manage.py load_tags
-sudo docker-compose exec backend python manage.py load_ingrs
-```
-
 ### Документация к API доступна после запуска
+'''url
 http://127.0.0.1/api/docs/
-...
+'''
