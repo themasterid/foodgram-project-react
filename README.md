@@ -1,7 +1,5 @@
-# Продуктовый помощник Foodgram
-
 ![foodgram-project-react Workflow Status](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master&event=push)
-
+# Продуктовый помощник Foodgram
 # Проект доступен по адресу (временно)
 
 http://themasterid.sytes.net/
