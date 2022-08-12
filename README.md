@@ -1,5 +1,5 @@
 ![foodgram-project-react Workflow Status](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master&event=push)
-# Продуктовый помощник Foodgram
+# Продуктовый помощник Foodgram (дополнить реадми)
 
 Проект доступен по адресу ... изменено.
 
