@@ -1,7 +1,7 @@
 ![foodgram-project-react Workflow Status](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master&event=push)
 # Продуктовый помощник Foodgram
 
-Проект доступен по адресу http://62.84.115.143/recipes
+Проект доступен по адресу ... изменено.
 
 ## Описание проекта Foodgram
 «Продуктовый помощник»: приложение, на котором пользователи публикуют рецепты, подписываться на публикации других авторов и добавлять рецепты в избранное. Сервис «Список покупок» позволит пользователю создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
@@ -24,6 +24,8 @@ mkdir infra
 
 ```bash
 scp docker-compose.yml username@server_ip:/home/<username>/
+```
+```bash
 scp default.conf <username>@<server_ip>:/home/<username>/
 ```
 - Создайте файл .env в дериктории infra:
@@ -56,8 +58,14 @@ sudo docker-compose up -d
 
 ```bash
 sudo docker-compose exec backend python manage.py makemigrations
-sudo docker-compose exec backend python manage.py migrate --noinput 
+```
+```bash
+sudo docker-compose exec backend python manage.py migrate --noinput
+```
+```bash
 sudo docker-compose exec backend python manage.py createsuperuser
+```
+```bash
 sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
@@ -65,6 +73,8 @@ sudo docker-compose exec backend python manage.py collectstatic --no-input
 
 ```bash
 sudo docker-compose exec backend python manage.py load_tags
+```
+```bash
 sudo docker-compose exec backend python manage.py load_ingrs
 ```
 
@@ -80,6 +90,8 @@ source /venv/bin/activated
 
 ```bash
 python -m pip install --upgrade pip
+```
+```bash
 pip install -r requirements.txt
 ```
 
@@ -98,3 +110,5 @@ python manage.py runserver
 ```url
 http://127.0.0.1/api/docs/
 ```
+
+Автор: [Клепиков Дмитрий](https://github.com/themasterid)
