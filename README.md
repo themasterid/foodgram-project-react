@@ -80,30 +80,75 @@ sudo docker-compose exec backend python manage.py load_ingrs
 
 ## Запуск проекта в dev-режиме
 
-- Установить и активировать виртуальное окружение
-
+- Установить и активировать виртуальное окружение:
+```bash
+cd foodgram-project-react
+```
+```bash
+python3 -m venv env
+```
 ```bash
 source /venv/bin/activated
 ```
 
 - Установить зависимости из файла requirements.txt
-
 ```bash
 python -m pip install --upgrade pip
 ```
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
-- Выполнить миграции:
-
+- Создайте базу и пользователя в Postgresql:
 ```bash
-python manage.py migrate
+sudo -u postgres psql
+```
+```sql
+CREATE DATABASE basename;
+```
+```sql
+CREATE USER username WITH ENCRYPTED PASSWORD 'password';
+```
+```sql
+GRANT ALL PRIVILEGES ON DATABASE basename TO username;
 ```
 
-- В папке с файлом manage.py выполнить команду:
+- В папке с проектом создаем файл .env:
 ```bash
-python manage.py runserver
+touch backend/foodgram/.env
+```
+
+С следующим содержанием db_name и db_user указываем свои:
+```python
+DB_ENGINE='django.db.backends.postgresql'
+DB_NAME='db_name'
+POSTGRES_USER='db_user'
+POSTGRES_PASSWORD='password'
+DB_HOST='localhost'
+DB_PORT='5432'
+SECRET_KEY='put_your_code'
+ALLOWED_HOSTS='127.0.0.1, localhost, backend, ip_server'
+DEBUG=False
+```
+
+- Выполняем и применяем миграции, создаем суперпользователя и собираем статику:
+```bash
+python backend/manage.py makemigrations
+```
+```bash
+python backend/manage.py migrate
+```
+```bash
+python backend/manage.py createsuperuser
+```
+```bash
+python backend/manage.py collectstatic --no-input
+```
+
+(Дописать 17.11.2012)
+- Запускаем сервер командой:
+```bash
+python backend/manage.py runserver
 ```
 
 ### Документация к API доступна после запуска
