@@ -37,25 +37,30 @@ mkdir infra
 ```bash
 scp docker-compose.yml username@server_ip:/home/<username>/
 ```
+
 ```bash
 scp default.conf <username>@<server_ip>:/home/<username>/
 ```
+
 - Создайте файл .env в дериктории infra:
+
 
 ```bash
 touch .env
 ```
+
 - Заполнить в настройках репозитория секреты .env
 
 ```python
-DB_ENGINE='django.db.backends.postgresql'
-DB_NAME=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-DB_HOST=db
-DB_PORT='5432'
-SECRET_KEY=
-ALLOWED_HOSTS=
+DB_ENGINE = 'django.db.backends.postgresql'
+POSTGRES_DB = 'foodgram'
+POSTGRES_USER = 'foodgram_u'
+POSTGRES_PASSWORD = 'foodgram_u_pass'
+DB_HOST = 'db'
+DB_PORT = '5432'
+SECRET_KEY = 'secret'
+ALLOWED_HOSTS = '127.0.0.1, backend'
+DEBUG = False
 ```
 
 Скопировать на сервер настройки docker-compose.yml, default.conf из папки infra.
@@ -93,34 +98,43 @@ sudo docker-compose exec backend python manage.py load_ingrs
 ## Запуск проекта в dev-режиме
 
 - Установить и активировать виртуальное окружение:
+
 ```bash
 cd foodgram-project-react
 ```
+
 ```bash
 python3 -m venv env
 ```
+
 ```bash
 source /venv/bin/activated
 ```
 
 - Установить зависимости из файла requirements.txt
+
 ```bash
 python -m pip install --upgrade pip
 ```
+
 ```bash
 pip install -r backend/requirements.txt
 ```
 
 - Создайте базу и пользователя в Postgresql:
+
 ```bash
 sudo -u postgres psql
 ```
+
 ```sql
 CREATE DATABASE basename;
 ```
+
 ```sql
 CREATE USER username WITH ENCRYPTED PASSWORD 'password';
 ```
+
 ```sql
 GRANT ALL PRIVILEGES ON DATABASE basename TO username;
 ```
@@ -132,38 +146,44 @@ touch backend/foodgram/.env
 
 С следующим содержанием db_name и db_user указываем свои:
 ```python
-DB_ENGINE='django.db.backends.postgresql'
-DB_NAME='db_name'
-POSTGRES_USER='db_user'
-POSTGRES_PASSWORD='password'
-DB_HOST='localhost'
-DB_PORT='5432'
-SECRET_KEY='put_your_code'
-ALLOWED_HOSTS='127.0.0.1, localhost, backend, ip_server'
-DEBUG=False
+DB_ENGINE = 'django.db.backends.postgresql'
+POSTGRES_DB = 'foodgram'
+POSTGRES_USER = 'foodgram_u'
+POSTGRES_PASSWORD = 'foodgram_u_pass'
+DB_HOST = 'localhost'
+DB_PORT = '5432'
+SECRET_KEY = 'secret'
+ALLOWED_HOSTS = '127.0.0.1, backend, localhost'
+DEBUG = False
 ```
 
 - Выполняем и применяем миграции, создаем суперпользователя и собираем статику:
+
 ```bash
 python backend/manage.py makemigrations
 ```
+
 ```bash
 python backend/manage.py migrate
 ```
+
 ```bash
 python backend/manage.py createsuperuser
 ```
+
 ```bash
 python backend/manage.py collectstatic --no-input
 ```
 
-(Дописать 17.11.2012)
+(Дописать 16.01.2023)
 - Запускаем сервер командой:
+
 ```bash
 python backend/manage.py runserver
 ```
 
 ### Документация к API доступна после запуска
+
 ```url
 http://127.0.0.1/api/docs/
 ```
