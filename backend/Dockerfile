@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python:3.9-slim
 WORKDIR /code
 COPY requirements.txt .
 RUN apt-get update && apt-get upgrade -y && \
