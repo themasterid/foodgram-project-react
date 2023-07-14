@@ -1,10 +1,11 @@
 ![foodgram-project-react Workflow Status](https://github.com/themasterid/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg?branch=master&event=push)
 # Продуктовый помощник Foodgram - дипломный проект студента 21 когорты Яндекс.Практикум 2021-2022 гг. Клепикова Д.
 
-После запуска проекта, он будет доступен по адресу http://127.0.0.1
+После запуска проекта, он будет доступен по адресу http://127.0.0.1 (если развернут на локальной машине в докере)
 Как запустить и посмотреть в действии описано ниже.
 
 ## Описание проекта Foodgram
+
 «Продуктовый помощник»: приложение, на котором пользователи публикуют рецепты кулинарных изделий, подписываться на публикации других авторов и добавлять рецепты в свое избранное.
 Сервис «Список покупок» позволит пользователю создавать список продуктов, которые нужно купить для приготовления выбранных блюд согласно рецепта/ов.
 
@@ -67,7 +68,7 @@ cd ~
 mkdir infra
 ```
 
-Предварительно из папки /backend и /frontend загрузим актуальные данные на DockerHub (на вашем ПК):
+Предварительно из папки /backend и /frontend загрузим актуальные данные на DockerHub (на вашем ПК) (themasterid - ваш логин на DH):
 
 ```bash
 docker login -u themasterid
@@ -93,10 +94,12 @@ cd ..
 cd frontend
 ```
 
+Готовим фронт для приложения, это заготовка для отправки на DH (где themasterid ваш логин на DH):
 ```bash
 docker build -t themasterid/foodgram_frontend:latest .
 ```
 
+Отправляем на DG:
 ```bash
 docker push themasterid/foodgram_frontend:latest
 ```
@@ -121,7 +124,7 @@ scp default.conf username@server_ip:/home/username/
 touch .env
 ```
 
-Заполнить в настройках репозитория секреты .env
+Заполнить в настройках репозитория секреты .env, необходимы для работы postgres в docker
 
 ```python
 DB_ENGINE='django.db.backends.postgresql'
@@ -138,7 +141,7 @@ DEBUG = False
 На этом настройка закончена, далее в папке infra выполняем команду:
 
 ```bash
-sudo docker-compose up -d --build
+docker-compose up -d --build
 ```
 
 Проект запустится на ВМ и будет доступен по указанному вами адресу либо IP. Завершение настройки на ВМ:
@@ -148,98 +151,83 @@ sudo docker-compose up -d --build
 Остановить: 
 
 ```bash
-sudo docker-compose stop
+docker-compose stop
 ```
 
 Удалить вместе с volumes:
 
 ```bash
 # Все данные удалятся!
-sudo docker-compose down -v
+docker-compose down -v
 ``` 
 
 Для доступа к контейнеру backend и сборки финальной части выполняем следующие команды:
 
 ```bash
-sudo docker-compose exec backend python manage.py makemigrations
+docker-compose exec backend python manage.py makemigrations
 ```
 
 ```bash
-sudo docker-compose exec backend python manage.py migrate --noinput
+docker-compose exec backend python manage.py migrate --noinput
 ```
 
 ```bash
-sudo docker-compose exec backend python manage.py createsuperuser
+docker-compose exec backend python manage.py createsuperuser
 ```
 
 ```bash
-sudo docker-compose exec backend python manage.py collectstatic --no-input
+docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
 Дополнительно можно наполнить DB ингредиентами и тэгами:
 
 ```bash
-sudo docker-compose exec backend python manage.py load_tags
+docker-compose exec backend python manage.py load_tags
 ```
 
 ```bash
-sudo docker-compose exec backend python manage.py load_ingrs
+docker-compose exec backend python manage.py load_ingrs
 ```
 
 На этом всё, продуктовый помощник запущен, можно наполнять его рецептами и делится с друзьями!
 
-### Запуск проекта в Docker на localhost
+### Запуск проекта в Docker на локальной машине.
 
 Для Linux ставим Docker как описано выше, для Windows устанавливаем актуальный Docker Desktop.
 
 В папке infra выполняем команду, что бы собрать контейнеры:
 
 ```bash
-sudo docker-compose up -d --build
+docker-compose up -d --build
 ```
 
-Остановить: 
+Для формирования базы из миграций, финальной настройки и заполнении базы тегами и ингридиентами,
+а так же подтянуть статику, и создаем суперюзера:
 
 ```bash
-sudo docker-compose stop
+docker-compose exec backend python manage.py makemigrations
 ```
 
-Удалить вместе с volumes:
-
+```bashдоступа к контейнеру выполняем следующие команды
 ```bash
-# Все данные удалятся!
-sudo docker-compose down -v
-``` 
-
-Для доступа к контейнеру выполняем следующие команды:
-
-```bash
-sudo docker-compose exec backend python manage.py makemigrations
+docker-compose exec backend python manage.py createsuperuser
 ```
 
 ```bash
-sudo docker-compose exec backend python manage.py migrate --noinput
-```
-
-```bash
-sudo docker-compose exec backend python manage.py createsuperuser
-```
-
-```bash
-sudo docker-compose exec backend python manage.py collectstatic --no-input
+docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
 Дополнительно можно наполнить DB ингредиентами и тэгами:
 
 ```bash
-sudo docker-compose exec backend python manage.py load_tags
+docker-compose exec backend python manage.py load_tags
 ```
 
 ```bash
-sudo docker-compose exec backend python manage.py load_ingrs
+docker-compose exec backend python manage.py load_ingrs
 ```
 
-При необходимости, но не обязательно, создаем базу и пользователя в PostgreSql (если будет необходимость запустить без Docker):
+В зависимости от настроек либо используем стандартную базу либо создаем базу и пользователя в Postgres (если будет необходимость запустить без Docker):
 
 ```bash
 sudo -u postgres psql
