@@ -1,8 +1,8 @@
-version: '3.8'
+version: '3.9'
 services:
 
   db:
-    image: postgres:14.6-alpine
+    image: postgres:14.8-bullseye
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -29,7 +29,7 @@ services:
       - backend
 
   nginx:
-    image: nginx:1.19.3
+    image: nginx:latest
     restart: always
     ports:
       - 80:80

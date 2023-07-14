@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11.4-bullseye
 WORKDIR /code
 COPY requirements.txt .
 RUN apt-get update && apt-get upgrade -y && \
