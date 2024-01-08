@@ -195,7 +195,7 @@ docker-compose exec backend python manage.py load_ingrs
 
 Для Linux ставим Docker как описано выше, для Windows устанавливаем актуальный Docker Desktop.
 
-В папке infra выполняем команду, что бы собрать контейнеры:
+Перейти в папку infra и выполнить сборку контейнеров:
 
 ```bash
 docker-compose up -d --build
@@ -208,7 +208,10 @@ docker-compose up -d --build
 docker-compose exec backend python manage.py makemigrations
 ```
 
-```bashдоступа к контейнеру выполняем следующие команды
+```bash
+docker-compose exec backend python manage.py migrate
+```
+
 ```bash
 docker-compose exec backend python manage.py createsuperuser
 ```
